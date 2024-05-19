@@ -18,11 +18,12 @@ class RequestLine:
 @dataclass
 class RequestHeaders:
     host: str
-    user_agent: str
-    accept: str
+    user_agent: str = None
+    accept: str = None
 
     @classmethod
     def from_list(cls, elements):
+        print(f"request headers: {elements}")
         values = [element.split(" ")[1] for element in elements]
         return cls(*values)
 
@@ -74,6 +75,7 @@ def main():
     client_socket, addr = server_socket.accept()
     print(f"Connection from {addr}")
     request = client_socket.recv(1024)
+    print(f"{request=}")
     request_line, request_headers = parse_request(request=request)
     print(f"{request_line=}")
     print(f"{request_headers=}")
@@ -86,7 +88,7 @@ def main():
         body = request_line.path.split("/", maxsplit=2)[-1]
         content_length = len(body)
         resp_headers = ResponseHeaders(
-            content_length=content_length, content_type="plain/text"
+            content_length=content_length, content_type="text/plain"
         )
         response = Response(
             version="HTTP/1.1",
@@ -99,7 +101,7 @@ def main():
         response = Response(
             version="HTTP/1.1", status_code=404, status_message="Not Found"
         )
-
+    print("response: ", response)
     client_socket.sendall(response.to_bytes())
 
 
