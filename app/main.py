@@ -16,12 +16,8 @@ def main(directory: str):
     print("Server is running on port 4221")
     while True:
         client_socket, addr = server_socket.accept()
-        print(f"Connection from {addr}")
         request = client_socket.recv(1024)
-        print(f"{request=}")
         request_line, request_headers, request_body = parse_request(request=request)
-        print(f"{request_line=}")
-        print(f"{request_headers=}")
 
         if request_line.path == "/":
             response = root_route()
@@ -39,7 +35,7 @@ def main(directory: str):
             )
         else:
             response = unknown_route()
-        print("response: ", response)
+        print("{response=}")
         client_socket.sendall(response.to_bytes())
 
 

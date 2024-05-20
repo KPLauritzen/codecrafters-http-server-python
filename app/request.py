@@ -28,15 +28,11 @@ class RequestHeaders:
 
 def parse_request(request: bytes) -> tuple[RequestLine, RequestHeaders, str]:
     string_request = request.decode(encoding="utf-8")
-    print(f"Decoded request: {string_request}")
     try:
         request_line_and_headers, body = string_request.split("\r\n\r\n")
     except ValueError:
-        print("WARNING: Did not find any body")
         request_line_and_headers = string_request.split("\r\n\r\n")
-    print(f"Split request: {request_line_and_headers=}")
     request_elements = request_line_and_headers.split("\r\n")
-    print(f"{request_elements=}")
     request_line = RequestLine.from_str(request_elements[0])
     headers = RequestHeaders.from_list(request_elements[1:])
     return request_line, headers, body
