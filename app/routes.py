@@ -42,7 +42,7 @@ def user_agent_route(request_headers: RequestHeaders):
     )
 
 
-def files_route(directory: str, request_line):
+def get_files_route(directory: str, request_line):
     filename = request_line.path.split("/", maxsplit=2)[-1]
     full_path = f"{directory}/{filename}"
     if not os.path.exists(full_path):
@@ -59,4 +59,17 @@ def files_route(directory: str, request_line):
         status_message="OK",
         headers=resp_headers,
         body=contents,
+    )
+
+
+def post_files_route(directory: str, request_body, request_line):
+    filename = request_line.path.split("/", maxsplit=2)[-1]
+    full_path = f"{directory}/{filename}"
+    print(f"{request_body=}")
+    with open(full_path, "w") as f:
+        f.write(request_body)
+    return Response(
+        version="HTTP/1.1",
+        status_code=201,
+        status_message="Created",
     )

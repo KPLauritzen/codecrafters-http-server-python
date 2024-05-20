@@ -3,7 +3,8 @@ import socket
 from app.request import parse_request
 from app.routes import (
     echo_route,
-    files_route,
+    get_files_route,
+    post_files_route,
     root_route,
     unknown_route,
     user_agent_route,
@@ -18,7 +19,7 @@ def main(directory: str):
         print(f"Connection from {addr}")
         request = client_socket.recv(1024)
         print(f"{request=}")
-        request_line, request_headers = parse_request(request=request)
+        request_line, request_headers, request_body = parse_request(request=request)
         print(f"{request_line=}")
         print(f"{request_headers=}")
 
@@ -28,8 +29,14 @@ def main(directory: str):
             response = echo_route(request_line=request_line)
         elif request_line.path.startswith("/user-agent"):
             response = user_agent_route(request_headers=request_headers)
-        elif request_line.path.startswith("/files/"):
-            response = files_route(directory=directory, request_line=request_line)
+        elif request_line.path.startswith("/files/") and request_line.method == "GET":
+            response = get_files_route(directory=directory, request_line=request_line)
+        elif request_line.path.startswith("/files/") and request_line.method == "POST":
+            response = post_files_route(
+                directory=directory,
+                request_body=request_body,
+                request_line=request_line,
+            )
         else:
             response = unknown_route()
         print("response: ", response)
